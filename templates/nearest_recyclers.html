@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Nearest Recyclers{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex justify-content-center">
+        <a href="/" class="lead backlink">
+          Back to the homepage
+        </a>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col">
+        <div id="results-as-json">
+          <h2>Results as JSON</h2>
+          <pre>{{ pformat(recyclers) }}</pre>
+        </div>
+
+        <div id="recycler-search-results">
+          <h2>Recycler Search Results</h2>
+
+          <p>
+            <span id="result-count">
+              {{ recyclers['num_results'] }}
+            </span>
+            events matched your search.
+          </p>
+
+          <ul class="events-list list-group">
+            {% for recycler in recyclers %}
+              <li class="list-group-item list-group-item-action">
+                <div class="row">
+
+                  <div class="col">
+                    <div class="d-flex w-100 justify-content-between">
+                      <small>{{ recyclers['description'] }}</small>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
