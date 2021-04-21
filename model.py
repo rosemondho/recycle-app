@@ -1,4 +1,4 @@
-"""Models for movie ratings app."""
+"""Models for recycler app."""
 
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
