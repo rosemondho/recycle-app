@@ -24,19 +24,23 @@
 
           <p>
             <span id="result-count">
-              {{ recyclers['num_results'] }}
+              {{ data['num_results'] }}
             </span>
-            events matched your search.
+            recyclers matched your search.
           </p>
 
-          <ul class="events-list list-group">
+          <ul class="recyclers-list list-group">
             {% for recycler in recyclers %}
-              <li class="list-group-item list-group-item-action">
+              <li class="list-group-item list-group-item-action" style="border: none">
                 <div class="row">
-
                   <div class="col">
-                    <div class="d-flex w-100 justify-content-between">
-                      <small>{{ recyclers['description'] }}</small>
+                    <div class="d-flex w-100 justify-content-between border-0">
+                      <h4><a href="/recycler/{{ recycler.location_id }}">{{ recycler['description'] }}</a></h4>
+                      <p>Distance: {{ recycler['distance'] }} mi</p>
+                      <p>Address: {{ loc_details[recycler['location_id']]['address'] }},
+                                  {{loc_details[recycler['location_id']]['city'] }}, 
+                                  {{loc_details[recycler['location_id']]['province'] }} 
+                                  {{loc_details[recycler['location_id']]['postal_code'] }}</p> 
                     </div>
                   </div>
                 </div>

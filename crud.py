@@ -58,10 +58,10 @@ def get_recycler_by_id(location_id):
     return Recycler.query.get(location_id)
 
 
-def fav_a_recycler(user, recycler, score):
+def fav_a_recycler(user, recycler, comments):
     """Create and return a new rating."""
 
-    fav_recycler = FavRecycler(user=user, recycler=recycler, favorited=fav_recycler)
+    fav_recycler = FavRecycler(user=user, recycler=recycler, comments=comments)
 
     db.session.add(fav_recycler)
     db.session.commit()

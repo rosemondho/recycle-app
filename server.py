@@ -4,9 +4,10 @@
 from flask import Flask, render_template, request, flash, session, redirect, url_for
 from model import connect_to_db
 from pprint import pformat
+from urllib.parse import urlencode
 import os
 import requests
-
+import json
 import crud
 
 #this throws errors when a variable is undefined, otherwise no error
@@ -59,20 +60,32 @@ def find_recycler_by_zip():
                'latitude': latitude,
                'longitude': longitude,
                'max_distance': maxdistance,
-               'max_results': 10}
+               'max_results': 5}
     response = requests.get(location_url, params=payload)
-    print(response)
     final_data = response.json()
-    recyclers = final_data['results']
     print(final_data)
+    recyclers = final_data['result']    # entire list of locations
     
-    # print list of recyclers near that zip code
-    # user = crud.get_user_by_email(new_email)
+    # Get address from location
+    loc_ids = []
+    locdetails_url = f'http://api.earth911.com/earth911.getLocationDetails'
+    for recycler in recyclers:
+        loc_ids.append(recycler['location_id'])
+    print('TYPE loc_ids: ', type(loc_ids))
+    print("LOCATION IDs: ", loc_ids)
+    payload = {'api_key': API_KEY,
+                'location_id[]': loc_ids}
+    response = requests.get(locdetails_url, params=payload)
+    loc_details = response.json()
+    loc_details = loc_details['result']
+    print('LOC_DETAILS:', loc_details)
+    
     return render_template('nearest_recyclers.html',
                             pformat=pformat,
                             data=final_data,
-                            recyclers=recyclers)
-    #return redirect(url_for('/nearest_recyclers', recyclers=recyclers))
+                            recyclers=recyclers,
+                            loc_details=loc_details)
+    
 
 
 # Nearest Recyclers: Show all of them
@@ -83,14 +96,96 @@ def find_recycler_by_zip():
 #     print("entered nearest_recyclers route")
 #     return render_template('nearest_recyclers.html', recyclers=recyclers)
 
+# make a dedicated route for handling to favorite a recycler
+# set it up like setting up details page
+# pulling user_id from session to populate info 
+# have a text box in form where to submit
+# app.route: def make_favorite(location_id): [action of favoriting]
+# /makefavorite
+# app.route: def favorites_page(): [actual favorited page]
+# submit form, get details from form, call crud, redirect location details
+@app.route("/add_to_favorites/<recycler_id>")
+def add_to_favorites(recycler_id):
+    """Add a melon to cart and redirect to shopping cart page.
+
+    When a melon is added to the cart, redirect browser to the shopping cart
+    page and display a confirmation message: 'Melon successfully added to
+    cart'."""
+
+    # The logic here should be something like:
+    #
+    # - check if a "cart" exists in the session, and create one (an empty
+    #   dictionary keyed to the string "cart") if not
+    # - check if the desired melon id is the cart, and if not, put it in
+    # - increment the count for that melon id by 1
+    # - flash a success message
+    # - redirect the user to the cart page
+    # add it to database to show user 
+    session.setdefault("cart",{})
+    melon_id_count = session["cart"]    # {melon_id: count}
+    melon = melons.get_by_id(melon_id).common_name
+    flash(f"{melon} was successfully added to cart.")
+    melon_id_count[melon_id] = melon_id_count.get(melon_id, 0) + 1
+    print(melon_id_count)
+    return redirect("/cart")
+
+# @app.route('/makefavorite')
+# def make_favorite():
+#     """Show details of a particular recycler"""
+
+#     recycler = crud.get_recycler_by_id(recycler_id)
+
+#     return render_template('recycler_details.html', recyclers = recyclers)
+
+@app.route("/favorites")
+def show_favorite_recyclers():
+    """Display content of shopping cart."""
+
+    # TODO: Display the contents of the shopping cart.
+
+    # The logic here will be something like:
+    #
+    # - get the cart dictionary from the session
+    # - create a list to hold melon objects and a variable to hold the total
+    #   cost of the order
+    # - loop over the cart dictionary, and for each melon id:
+    #    - get the corresponding Melon object
+    #    - compute the total cost for that type of melon
+    #    - add this to the order total
+    #    - add quantity and total cost as attributes on the Melon object
+    #    - add the Melon object to the list created above
+    # - pass the total order cost and the list of Melon objects to the template
+    #
+    # Make sure your function can also handle the case wherein no cart has
+    # been added to the session
+    fav_recycler = session["favorites"]
+    melon_list = []
+    cart_sum = 0
+    for melon_id in melon_id_count:
+        print("number of melons: " + str(melon_id_count[melon_id]))
+        melon_obj = melons.get_by_id(melon_id)
+        melon_obj.quantity = melon_id_count[melon_id]
+        print("quantity * price per melon: " + melon_obj.total())
+        total = melon_obj.total_cost
+        melon_list.append(melon_obj)
+        cart_sum = cart_sum + total
+
+    cart_sum = "${:.2f}".format(cart_sum)
+    print(melon_list[0].common_name)
+    print(cart_sum)
+    print(melon_list)
+    return render_template("cart.html", 
+                            cart=melon_list, 
+                            cart_sum=cart_sum, 
+                            )
 
 @app.route('/recycler/<location_id>')
 def show_recycler(location_id):
     """Show details of a particular recycler"""
+    # interact with API to call more details
+    # recycler = crud.get_recycler_by_id(location_id)
 
-    #recycler = crud.get_recycler_by_id(recycler_id)
-
-    return render_template('recycler_details.html', recyclers = recyclers)
+    return render_template('recycler_details.html', recycler=recycler)
 
 
 @app.route('/createaccount')

@@ -20,12 +20,16 @@ img {
   } */
   
   body{
-    background-color: rgb(235, 232, 199);
+    background-color: white;
   }
   
   h1 {
     font-family: sans-serif;
     color: green;
+  }
+
+  .list-group li:nth-child(1){
+    border: 0 none;
   }
   
   

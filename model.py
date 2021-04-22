@@ -52,7 +52,7 @@ class FavRecycler(db.Model):
         return f'<FavRecycler recycler_id={self.rating_id} comment={self.comment}>'
 
 
-def connect_to_db(flask_app, db_uri='postgresql:///ratings', echo=True):
+def connect_to_db(flask_app, db_uri='postgresql:///recyclers', echo=True):
     flask_app.config['SQLALCHEMY_DATABASE_URI'] = db_uri
     flask_app.config['SQLALCHEMY_ECHO'] = echo
     flask_app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
