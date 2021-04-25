@@ -1,7 +1,16 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ user.email }}'s Page{% endblock %}
-
 {% block body %}
-<h1>{{ user.email }}</h1>
+<h1>Welcome, {{ user.name }}!</h1>
+<h4>name: {{ user.name }}</h4>
+<h4>email: {{ user.email }}</h4>
+
+<div class="container">
+    <div class="row">
+      <div class="col d-flex justify-content-center">
+        <a href="/favorites" class="lead backlink">
+          Favorite Recyclers List
+        </a>
+      </div>
+    </div>
 {% endblock %}

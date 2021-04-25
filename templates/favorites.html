@@ -1,0 +1,30 @@
+
+{% extends 'base.html' %}
+
+{% block body %}
+
+    <table class="table table-striped">
+        <thead> 
+        <tr>
+            <th>Recycler Name</th>
+            <th>Distance</th>
+            <th>Materials</th>
+            <th>Comments</th>
+        </tr>
+        </thead>
+        <tbody>
+            {% for recycler in favorites %} 
+                <tr>
+                    <th>{{ recycler['description'] }}</th>
+                    <th>{{ recycler['distance'] }}</th>
+                    <th>{{ recycler['materials'] }}</th>
+                    <th>{{ recycler['comments'] }}</th>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+
+    <!-- <a href="/checkout" class="btn btn-large btn-primary">Check Out</a> -->
+
+{% endblock %}

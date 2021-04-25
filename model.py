@@ -13,10 +13,9 @@ class User(db.Model):
     user_id = db.Column(db.Integer,
                         autoincrement=True,
                         primary_key=True)
+    name = db.Column(db.String)
     email = db.Column(db.String, unique=True)
-    zip_code = db.Column(db.Integer)
     password = db.Column(db.String)
-    pet_num = db.Column(db.Integer)
 
 
     def __repr__(self):
@@ -29,14 +28,14 @@ class Recycler(db.Model):
     location_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
     name = db.Column(db.String)
     address = db.Column(db.Text)
-    recycling_info = db.Column(db.String)
-    description = db.Column(db.String)
+    materials = db.Column(db.String)
+    distance = db.Column(db.Integer)
 
     def __repr__(self):
         return f'<Recycler location_id={self.location_id} name={self.name}>'
 
 class FavRecycler(db.Model):
-    """A movie rating."""
+    """A favorited Recycler."""
 
     __tablename__ = 'fav_recycler'
 

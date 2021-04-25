@@ -1,1 +1,38 @@
-</div>
+{% extends 'base.html' %}
+
+{% block body %}
+
+    <h2>{{ recycler['description'] }}</h2>
+
+    <div class="row">
+
+        <div class="col-xs-8 col-sm-6 col-md-4 col-lg-3">
+            <a class="btn btn-primary" href="/add_to_favorites/{{location_id}}">
+                Add to Favorites
+            </a>
+        </div>
+    </div>
+<br>
+    <div class="recycler-details">
+
+        <h3>Recycler Details</h3><br>
+
+
+        <h4>Address</h4>
+        <p>{{ recycler['address'] }}</p>
+        <p>{{ recycler['city'] }},
+            {{ recycler['province'] }},
+            {{ recycler['postal_code'] }}</p><br>
+        <h4>Phone</h4>
+        <p>{{ recycler['phone'] }}</p><br>
+        <h4>Website</h4>
+        <p>{{ recycler['url'] }}</p><br>
+        <h4>Accepted Materials</h4>
+        <ul>
+        {% for material in materials %}
+            <li>{{ material['description'] }}</li>
+        {% endfor %}
+        </ul>
+    </div>
+
+{% endblock %}

@@ -1,13 +1,14 @@
-import urllib
+from urllib.request import urlopen
 import os
 import simplejson
+
 
 API_KEY = os.environ['EARTH911_KEY']
  
 base_url = 'http://api.earth911.com/'
  
 def query(url):
-    text = urllib.urlopen(url).read()
+    text = urlopen(url).read()
     result = simplejson.loads(text)
     if 'error' in result:
         raise Exception(result['error'])

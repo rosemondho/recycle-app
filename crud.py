@@ -3,10 +3,10 @@
 from model import db, User, Recycler, FavRecycler, connect_to_db
 
 
-def create_user(email, password):
+def create_user(name, email, password):
     """Create and return a new user."""
 
-    user = User(email=email, password=password)
+    user = User(name=name, email=email, password=password)
 
     db.session.add(user)
     db.session.commit()
@@ -14,16 +14,10 @@ def create_user(email, password):
     return user
 
 
-def get_users():
-    """Return all users."""
-
-    return User.query.all()
-
-
 def get_user_by_id(user_id):
     """Return a user by primary key."""
 
-    return User.query.get(user_id)
+    return User.query.filter(User.user_id == user_id).first()
 
 
 def get_user_by_email(email):
@@ -32,34 +26,18 @@ def get_user_by_email(email):
     return User.query.filter(User.email == email).first()
 
 
-# def create_movie(title, overview, release_date, poster_path):
-#     """Create and return a new movie."""
-
-#     movie = Movie(title=title,
-#                   overview=overview,
-#                   release_date=release_date,
-#                   poster_path=poster_path)
-
-#     db.session.add(movie)
-#     db.session.commit()
-
-#     return movie
-
-
-# def get_recyclers():
-#     """Return all recyclers."""
-
-#     return Recycler.query.all()
-
-
 def get_recycler_by_id(location_id):
-    """Return a movie by primary key."""
+    """Return a recycler by primary key."""
 
     return Recycler.query.get(location_id)
 
+def user_id_if_match(email, password):
+    if User.query.filter(User.password == password).first():
+        
+        return get_user_by_email(email).user_id
 
 def fav_a_recycler(user, recycler, comments):
-    """Create and return a new rating."""
+    """Return a new favorited recycler."""
 
     fav_recycler = FavRecycler(user=user, recycler=recycler, comments=comments)
 

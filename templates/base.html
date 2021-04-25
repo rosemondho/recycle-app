@@ -14,31 +14,40 @@
     <div class="container">
 
         <div class="navbar-header">
-            <!-- <img src="/static/img/ubermelon-logo.png"> -->
             <a class="navbar-brand" href="/">Aspiration Recycling</a>
         </div>
 
         <div class="navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
                 <li>
-                    <a href="/recyclers">
-                        <!-- <img class="melon-cart"
-                             src="/static/img/watermelon.png"> -->
+                    <a href="/favorites">
                         Favorited Recyclers
                     </a>
                 </li>
                 <li>
                     <a href="/createaccount">
-                        <!-- <img class="melon-cart"
-                             src="/static/img/watermelon.png"> -->
                         Create Account
                     </a>
                 </li>
-                <li>
-                    <a href="/login">
-                        Log In
+                {% if 'Current User' in session %}
+                  <li>
+                    <a href="/{{ session['Current User'] }}">
+                      My Profile
                     </a>
-                </li>
+                  </li>
+                  <li>
+                    <a href="/logout">
+                      Log Out
+                    </a>
+                  </li> 
+                {% else %}
+                  <li>    
+                    <a href="/login">
+                      Log In
+                    </a>
+                  </li>
+                {% endif %}
+                
             </ul>
         </div>
 
