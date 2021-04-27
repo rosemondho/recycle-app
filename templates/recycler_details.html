@@ -2,17 +2,29 @@
 
 {% block body %}
 
-    <h2>{{ recycler['description'] }}</h2>
+    <h2>{{ recycler['description'] }}</h2>   
+    <br>
+    {% if 'Current User' in session %}
+        {% if is_favorited %}
+        <button type="button" disabled>Add To Favorites</button>
 
-    <div class="row">
+        {% else %}
+            <form action="/add_to_favorites/{{location_id}}" method="POST">
+                <p>
+                    <input type="Submit" class="favorite" value="Add to Favorites"/>
+                </p>
+            </form>
+        {% endif %}
+    {% endif %}
+    <!-- <div class="row">
 
         <div class="col-xs-8 col-sm-6 col-md-4 col-lg-3">
             <a class="btn btn-primary" href="/add_to_favorites/{{location_id}}">
                 Add to Favorites
             </a>
         </div>
-    </div>
-<br>
+    </div> -->
+
     <div class="recycler-details">
 
         <h3>Recycler Details</h3><br>
@@ -34,5 +46,41 @@
         {% endfor %}
         </ul>
     </div>
+    <br>
+
+    <div class="recycler-comments">
+
+        <h3>Comments Section</h3><br>
+
+        <h4>All Comments</h4>
+        
+        {% for comment in comments %}
+            <p><b>{{ comment.name }}</b> | {{ comment.comment }}</p>
+        {% endfor %}
+        
+    </div>
+    <br>
+    {% if 'Current User' in session %}
+        <form action="/recycler/{{location_id}}" method="POST">
+            <p>
+            <h4>Leave A Comment</h4>
+            <textarea rows="4" cols="50" name="comment"></textarea>
+            </p>
+
+            <p>
+                <input type="Submit">
+            </p>
+
+        </form>
+    {% endif %}
+    <!-- <div class="row">
+
+        <div class="col-xs-8 col-sm-6 col-md-4 col-lg-3">
+            <a class="btn btn-primary" href="/recycler/{{location_id}}">
+                Submit
+            </a>
+        </div>
+    </div> -->
+    <br><br>
 
 {% endblock %}

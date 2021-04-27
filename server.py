@@ -9,6 +9,7 @@ import os
 import requests
 import json
 import crud
+import materials
 
 #this throws errors when a variable is undefined, otherwise no error
 from jinja2 import StrictUndefined
@@ -100,42 +101,45 @@ def show_recycler(location_id):
     print('Recycler:', recycler)
     print('Accepted Materials:', materials) 
 
+    if session['Current User']:
+        is_favorited = crud.is_recycler_favorited(location_id,
+                                                  session['Current User'])
+
+    comments = crud.get_recycler_comments(location_id)
+
+    print("ALL COMMENTS: ", comments)
+
     return render_template('recycler_details.html',
                            recycler=recycler,
                            materials=materials,
-                           location_id=location_id)
+                           location_id=location_id,
+                           comments=comments,
+                           is_favorited=is_favorited)
 
-# make a dedicated route for handling to favorite a recycler
-# set it up like setting up details page
-# pulling user_id from session to populate info 
-# have a text box in form where to submit
-# app.route: def make_favorite(location_id): [action of favoriting]
-# /makefavorite
-# app.route: def favorites_page(): [actual favorited page]
-# submit form, get details from form, call crud, redirect location details
-@app.route("/add_to_favorites/<location_id>")
+
+@app.route('/recycler/<location_id>', methods=['POST'])
+def submit_comment(location_id):
+    """Get comment from user."""
+
+    user_id = session['Current User']
+    print('USER ID: ', session['Current User'])
+    print("USER ID TYPE: ", type(user_id))
+    comment = request.form.get('comment')
+    print("LOCATION ID: ", location_id)
+    name = crud.get_user_by_id(user_id).name
+    print(name)
+    crud.create_comment(user_id, name, location_id, comment)
+
+    flash('Comment submitted.')
+    return redirect(f'/recycler/{location_id}')
+
+
+@app.route("/add_to_favorites/<location_id>", methods=['POST'])
 def add_to_favorites(location_id):
-    """Add a recycler to favorites and redirect to Favorites page.
+    """Add a recycler to favorites and redirect to Favorites page."""
+    user_id = session['Current User']
 
-    When a melon is added to the cart, redirect browser to the shopping cart
-    page and display a confirmation message: 'Melon successfully added to
-    cart'."""
-
-    # The logic here should be something like:
-    #
-    # - check if a "cart" exists in the session, and create one (an empty
-    #   dictionary keyed to the string "cart") if not
-    # - check if the desired melon id is the cart, and if not, put it in
-    # - increment the count for that melon id by 1
-    # - flash a success message
-    # - redirect the user to the cart page
-    # add it to database to show user 
-
-
-    session.setdefault(session['Current User'],{})  
-    fav_recycler = session["favorites"]    # {location_id : comments} 
-    
-    # get name of recycler from API
+    # Get name of recycler from API
     locdetails_url = f'http://api.earth911.com/earth911.getLocationDetails'
     payload = {'api_key': API_KEY,
               'location_id[]': location_id}
@@ -144,23 +148,40 @@ def add_to_favorites(location_id):
     print("Location Details: ", loc_details)
     recycler_name = loc_details['result'][location_id]['description']
 
+    # Add the recycler to Favorites database
+    crud.fav_a_recycler(user_id, location_id)
     flash(f"{recycler_name} was successfully added to Favorites.")
-    return redirect("/favorites")
+    return redirect(f'/recycler/{location_id}')
 
 
 @app.route("/favorites")
-def show_favorite_recyclers(location_id):
+def show_favorite_recyclers():
     """Display list of favorited recyclers."""
+    loc_details=''
+    favorites = crud.get_favorited_recyclers(session['Current User'])
 
-    fav_recyclers = session["favorites"]
-    fav_recycler_list = []
-    for recycler in fav_recyclers:
-        fav_recycler_list.append(location_id)
+    if favorites:
+        print("FAVORITES: ", favorites)
+        loc_ids = []
 
-    print(fav_recycler_list[0]['result'][location_id]['description'])
-    print(fav_recycler_list)
+        url = f'http://api.earth911.com/earth911.getLocationDetails'
+        
+        #loop through the favorited recyclers and add them
+        for favorite in favorites:
+            loc_ids.append(favorite.location_id)
+        
+        print("LOCATION IDs FROM FAVORITES: ", loc_ids)
+        payload = {'api_key': API_KEY,
+                'location_id[]': loc_ids}
+
+        response = requests.get(url, params=payload)
+        loc_details = response.json()
+        loc_details = loc_details['result']
+        print("FAVORITES Location Details: ", loc_details)
+
     return render_template("favorites.html", 
-                            favorites=fav_recycler_list)
+                            favorites=favorites,
+                            loc_details=loc_details)
 
 
 @app.route('/createaccount')
@@ -187,7 +208,7 @@ def register_user():
         crud.create_user(new_name, new_email, new_password)
         flash('Account created. Please log in.')
     
-    return redirect('/')
+    return redirect('/login')
 
 @app.route('/login')
 def login():
@@ -206,32 +227,37 @@ def login_user():
     print('SESSION: ', session)
     print('USER ID: ', user_id)
     
-
-    if user_id:
+    if user_id is not None:
         flash('Logged in!')
-        return redirect(url_for('show_user', user_id=user_id))
+        return redirect(f'/user/{user_id}')
+        #return redirect(url_for('show_user', user_id=user_id))
     else:
         flash("Email or password incorrect. Try again.")
         return redirect('/login')
 
 
-@app.route('/<user_id>')
+@app.route('/user/<user_id>')
 def show_user(user_id):
     """Show users info based on the specified user_id"""
-    print('ENTERED SHOW_USER FN')
-    print('Type: ', type(user_id))
-    user = crud.get_user_by_id(user_id)
-    print('GOT USER')
-    print(user)
 
+    print('ENTERED SHOW_USER FN')
+    print('user_id Type: ', type(user_id))
+    print('user_id: ', user_id)
+    user = crud.get_user_by_id(int(user_id))
+
+    print("USER TYPE: ", user)
     return render_template('user_profile.html', user=user)
+    
 
 @app.route('/logout')
 def logout_user():
     """Logs out user."""
-    if session['Current User']:    
+    if session['Current User'] is not None:    
         session.pop('Current User', None)
         flash("Successfully logged out.")
+    else:
+       session.clear()
+       flash("You are not logged in.") 
 
     return render_template('homepage.html')
 

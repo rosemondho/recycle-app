@@ -19,19 +19,15 @@
 
         <div class="navbar-collapse">
             <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <a href="/favorites">
-                        Favorited Recyclers
-                    </a>
-                </li>
-                <li>
-                    <a href="/createaccount">
-                        Create Account
-                    </a>
-                </li>
+                
                 {% if 'Current User' in session %}
                   <li>
-                    <a href="/{{ session['Current User'] }}">
+                      <a href="/favorites">
+                          Favorited Recyclers
+                      </a>
+                  </li>
+                  <li>
+                    <a href="/user/{{ session['Current User'] }}">
                       My Profile
                     </a>
                   </li>
@@ -41,6 +37,11 @@
                     </a>
                   </li> 
                 {% else %}
+                  <li>
+                      <a href="/createaccount">
+                          Create Account
+                      </a>
+                  </li>
                   <li>    
                     <a href="/login">
                       Log In

@@ -19,20 +19,22 @@ class User(db.Model):
 
 
     def __repr__(self):
-        return f'<User user_id={self.user_id} email={self.email}>'
+        return f'<User user_id={self.user_id} name={self.name} email={self.email}>'
 
-class Recycler(db.Model):
-    """A recycler in the recycling directory."""
-    __tablename__ = 'recyclers'
+# class Recycler(db.Model):
+#     """A recycler in the recycling directory."""
+#     __tablename__ = 'recyclers'
 
-    location_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    name = db.Column(db.String)
-    address = db.Column(db.Text)
-    materials = db.Column(db.String)
-    distance = db.Column(db.Integer)
+#     location_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+#     name = db.Column(db.String)
+#     address = db.Column(db.Text)
+#     materials = db.Column(db.String)
+#     distance = db.Column(db.Integer)
 
-    def __repr__(self):
-        return f'<Recycler location_id={self.location_id} name={self.name}>'
+#     def __repr__(self):
+#         return f'<Recycler location_id={self.location_id} name={self.name}>'
+
+
 
 class FavRecycler(db.Model):
     """A favorited Recycler."""
@@ -40,15 +42,33 @@ class FavRecycler(db.Model):
     __tablename__ = 'fav_recycler'
 
     recycler_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    location_id = db.Column(db.Integer, db.ForeignKey('recyclers.location_id'))
+    location_id = db.Column(db.String)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
-    comment = db.Column(db.String)
 
-    recycler = db.relationship('Recycler', backref='fav_recycler')
-    user = db.relationship('User', backref='fav_recycler')
+    __table_args__ = (db.UniqueConstraint('user_id', 'location_id'), )
+    # recycler = db.relationship('Comment', backref='fav_recycler')
+    # user = db.relationship('User', backref='fav_recycler')
 
     def __repr__(self):
-        return f'<FavRecycler recycler_id={self.rating_id} comment={self.comment}>'
+        return f'<FavRecycler user_id={self.user_id} location_id={self.location_id}>'
+
+
+class Comment(db.Model):
+    """General comment in the Recycler Details section."""
+
+    __tablename__ = 'comments'
+
+    comment_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
+    location_id = db.Column(db.String)
+    #location_id = db.Column(db.Integer, db.ForeignKey('fav_recycler.location_id'))
+    name = db.Column(db.String)
+    user_id = db.Column(db.Integer)
+    comment = db.Column(db.String)
+
+    
+
+    def __repr__(self):
+        return f'<Recycler location_id={self.location_id} comment={self.comment}>'
 
 
 def connect_to_db(flask_app, db_uri='postgresql:///recyclers', echo=True):
