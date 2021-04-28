@@ -21,28 +21,41 @@ API_KEY = os.environ['EARTH911_KEY']
 
 app.jinja_env.undefined = StrictUndefined
 
-# have a search option
-# menu on top to log in
-# create an account 
-# profile to get to show all favorite recyclers
-# update to database based on what you're grabbing from API
-
-
  
 @app.route('/')
 def homepage():
     """View homepage"""
 
-    return render_template('homepage.html')
+    materials_list = materials.get_materials()
+    
+    return render_template('homepage.html', materials=materials_list)
 
 
-@app.route('/searchbyzip', methods=['GET'])
-def find_recycler_by_zip():
-    """Create a new uesr."""
+@app.route('/search', methods=['GET'])
+def search_for_recyclers():
+    """Search for recycler in area."""
+
+    chosen_material_id = []  
+
+    materials_list = materials.get_materials()  # list of dictionaries    
     postalcode = request.args.get('zipcode')
     maxdistance = request.args.get('radius')
-    print(postalcode)
-    print(maxdistance)
+    chosen_materials = request.args.getlist('material_item')
+    num_results = request.args.get('num_results')
+    print('MATERIAL(S) CHOSEN: ', chosen_materials)
+    print('material TYPE: ', type(chosen_materials))
+
+
+    # Links material description to material ID. var material is a Type<'str>
+    for material in chosen_materials: 
+        # loop through 
+        for material_dict in materials_list:
+            if material == material_dict['description']:
+                chosen_material_id.append(material_dict['material_id'])
+                break 
+    
+    print('CHOSEN MATERIAL-IDS: ', chosen_material_id)
+            
     url = f'http://api.earth911.com/earth911.getPostalData'
     payload = {'api_key': API_KEY,
                'country': 'US',
@@ -50,19 +63,33 @@ def find_recycler_by_zip():
 
     response = requests.get(url, params=payload)
     data = response.json()
+
+    if 'error' in data:
+        flash(f'{postalcode} is not a valid postal code. Please try again.')
+        return redirect('/')
+
     latitude = data['result']['latitude']
     longitude = data['result']['longitude']
-    print(latitude, longitude)
     
     location_url = f'http://api.earth911.com/earth911.searchLocations'
-    payload = {'api_key': API_KEY,
-               'latitude': latitude,
-               'longitude': longitude,
-               'max_distance': maxdistance,
-               'max_results': 5}
+    
+    if chosen_materials:
+        payload = {'api_key': API_KEY,
+                'latitude': latitude,
+                'longitude': longitude,
+                'material_id': chosen_material_id,
+                'max_distance': maxdistance,
+                'max_results': num_results}
+    elif not chosen_materials:
+       payload = {'api_key': API_KEY,
+                'latitude': latitude,
+                'longitude': longitude,
+                'max_distance': maxdistance,
+                'max_results': num_results}
+
     response = requests.get(location_url, params=payload)
     final_data = response.json()
-    print(final_data)
+    # print(final_data)
     recyclers = final_data['result']    # entire list of locations
     
     # Get address from location
@@ -72,12 +99,18 @@ def find_recycler_by_zip():
         loc_ids.append(recycler['location_id'])
     print('TYPE loc_ids: ', type(loc_ids))
     print("LOCATION IDs: ", loc_ids)
+
+    if loc_ids == []:
+        flash('0 recyclers matched your search.')
+        redirect('/')
+
     payload = {'api_key': API_KEY,
                 'location_id[]': loc_ids}
+
     response = requests.get(locdetails_url, params=payload)
     loc_details = response.json()
     loc_details = loc_details['result']
-    print('LOC_DETAILS:', loc_details)
+    # print('LOC_DETAILS:', loc_details)
     
     return render_template('nearest_recyclers.html',
                             pformat=pformat,
@@ -89,19 +122,21 @@ def find_recycler_by_zip():
 @app.route('/recycler/<location_id>')
 def show_recycler(location_id):
     """Show details of a particular recycler"""
-    # interact with API to call more details  
+    
+    is_favorited = []
+    
     locdetails_url = f'http://api.earth911.com/earth911.getLocationDetails'
-    print("LOCATION ID: ", location_id)
+    # print("LOCATION ID: ", location_id)
     payload = {'api_key': API_KEY,
                 'location_id[]': location_id}
     response = requests.get(locdetails_url, params=payload)
     loc_detail = response.json()
     recycler = loc_detail['result'][location_id]
     materials = recycler['materials'] 
-    print('Recycler:', recycler)
-    print('Accepted Materials:', materials) 
+    # print('Recycler:', recycler)
+    # print('Accepted Materials:', materials) 
 
-    if session['Current User']:
+    if 'Current User' in session:
         is_favorited = crud.is_recycler_favorited(location_id,
                                                   session['Current User'])
 
@@ -137,6 +172,7 @@ def submit_comment(location_id):
 @app.route("/add_to_favorites/<location_id>", methods=['POST'])
 def add_to_favorites(location_id):
     """Add a recycler to favorites and redirect to Favorites page."""
+
     user_id = session['Current User']
 
     # Get name of recycler from API
@@ -145,7 +181,7 @@ def add_to_favorites(location_id):
               'location_id[]': location_id}
     response = requests.get(locdetails_url, params=payload)
     loc_details = response.json()
-    print("Location Details: ", loc_details)
+    # print("Location Details: ", loc_details)
     recycler_name = loc_details['result'][location_id]['description']
 
     # Add the recycler to Favorites database
@@ -157,6 +193,7 @@ def add_to_favorites(location_id):
 @app.route("/favorites")
 def show_favorite_recyclers():
     """Display list of favorited recyclers."""
+
     loc_details=''
     favorites = crud.get_favorited_recyclers(session['Current User'])
 
@@ -177,7 +214,7 @@ def show_favorite_recyclers():
         response = requests.get(url, params=payload)
         loc_details = response.json()
         loc_details = loc_details['result']
-        print("FAVORITES Location Details: ", loc_details)
+        # print("FAVORITES Location Details: ", loc_details)
 
     return render_template("favorites.html", 
                             favorites=favorites,
@@ -187,18 +224,17 @@ def show_favorite_recyclers():
 @app.route('/createaccount')
 def create_account():
     """Create account for a new user."""
+
     return render_template('create_account.html')
 
 
 @app.route('/createaccount', methods=['POST'])
 def register_user():
     """Create a new uesr."""
+
     new_name = request.form.get('name')
     new_email = request.form.get('email')
     new_password = request.form.get('password')
-
-     # if email exists, flash message to say you can't create an account 
-     # if it doens't, create new user flash message telling it created successfully
 
     user = crud.get_user_by_email(new_email)
 
@@ -230,7 +266,6 @@ def login_user():
     if user_id is not None:
         flash('Logged in!')
         return redirect(f'/user/{user_id}')
-        #return redirect(url_for('show_user', user_id=user_id))
     else:
         flash("Email or password incorrect. Try again.")
         return redirect('/login')
@@ -240,7 +275,6 @@ def login_user():
 def show_user(user_id):
     """Show users info based on the specified user_id"""
 
-    print('ENTERED SHOW_USER FN')
     print('user_id Type: ', type(user_id))
     print('user_id: ', user_id)
     user = crud.get_user_by_id(int(user_id))
@@ -252,14 +286,14 @@ def show_user(user_id):
 @app.route('/logout')
 def logout_user():
     """Logs out user."""
-    if session['Current User'] is not None:    
+    if 'Current User' in session:    
         session.pop('Current User', None)
         flash("Successfully logged out.")
     else:
        session.clear()
        flash("You are not logged in.") 
 
-    return render_template('homepage.html')
+    return redirect('/')
 
 
 

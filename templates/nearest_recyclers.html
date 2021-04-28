@@ -14,41 +14,34 @@
     <br>
     <div class="row">
       <div class="col">
-        <!-- <div id="results-as-json">
-          <h2>Results as JSON</h2>
-          <pre>{{ pformat(recyclers) }}</pre>
-        </div> -->
 
         <div id="recycler-search-results">
           <h2>Recycler Search Results</h2>
 
           <p>
             <span id="result-count">
-              {{ data['num_results'] }}
+                {{ data['num_results'] }}
             </span>
             recyclers matched your search.
           </p>
 
-          <ul class="recyclers-list list-group">
+          
             {% for recycler in recyclers %}
+            <ul class="recyclers-list list-group">
               <li class="list-group-item list-group-item-action" style="border: none">
                 <div class="row">
                   <div class="col">
                     <div class="d-flex w-100 justify-content-between border-0">
-                      <h4><a href="/recycler/{{ recycler.location_id }}">{{ recycler['description'] }}</a></h4>
-                      <p>Distance: {{ recycler['distance'] }} mi</p>
-                      <!-- <p>Address: {{ loc_details[recycler['location_id']]['address'] }},
-                                  {{loc_details[recycler['location_id']]['city'] }}, 
-                                  {{loc_details[recycler['location_id']]['province'] }} 
-                                  {{loc_details[recycler['location_id']]['postal_code'] }}</p>  -->
+                        <h4><a href="/recycler/{{ recycler.location_id }}">{{ recycler['description'] }}</a></h4>
+                        <p>Distance: {{ recycler['distance'] }} mi</p>
                     </div>
                   </div>
                 </div>
-              </li>
+              </li>     
             {% endfor %}
           </ul>
         </div>
       </div>
     </div>
-  </div>
+  </div> 
 {% endblock %}

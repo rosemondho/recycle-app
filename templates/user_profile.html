@@ -1,16 +1,23 @@
 {% extends 'base.html' %}
 
 {% block body %}
-<h1>Welcome, {{ user.name }}!</h1>
-<h4>name: {{ user.name }}</h4>
-<h4>email: {{ user.email }}</h4>
+<h2>Welcome, {{ user.name }}!</h2>
 
 <div class="container">
-    <div class="row">
-      <div class="col d-flex justify-content-center">
-        <a href="/favorites" class="lead backlink">
-          Favorite Recyclers List
-        </a>
-      </div>
+  <div class="row">
+    <div class="col d-flex justify-content-center">
+      <a href="/favorites" class="lead backlink">
+        Favorite Recyclers List
+      </a>
     </div>
+  </div>
+</div>
+<br>
+
+<p><h4>Name</h4></p>
+<p>{{ user.name }}</p><br>
+<h4>Email</h4>
+<p>{{ user.email }}</p><br>
+
+
 {% endblock %}

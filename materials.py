@@ -18,5 +18,5 @@ def query(url):
 def get_materials():
     return query(base_url + 'earth911.getMaterials?api_key=' + API_KEY)
  
-for material in get_materials():
-    print (f"{material['description']} ({material['material_id']})")
+# for material in get_materials():
+#     print (f"{material['description']} ({material['material_id']})")

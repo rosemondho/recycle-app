@@ -6,24 +6,17 @@
     <br>
     {% if 'Current User' in session %}
         {% if is_favorited %}
-        <button type="button" disabled>Add To Favorites</button>
-
+        <!-- <button type="button" disabled>Add To Favorites</button> -->
+            <input type="submit" value="Add To Favorites" class="btn btn-primary" disabled>
         {% else %}
             <form action="/add_to_favorites/{{location_id}}" method="POST">
                 <p>
-                    <input type="Submit" class="favorite" value="Add to Favorites"/>
+                    <input type="submit" value="Add To Favorites" class="btn btn-primary">
                 </p>
             </form>
         {% endif %}
     {% endif %}
-    <!-- <div class="row">
 
-        <div class="col-xs-8 col-sm-6 col-md-4 col-lg-3">
-            <a class="btn btn-primary" href="/add_to_favorites/{{location_id}}">
-                Add to Favorites
-            </a>
-        </div>
-    </div> -->
 
     <div class="recycler-details">
 
@@ -68,19 +61,11 @@
             </p>
 
             <p>
-                <input type="Submit">
+                <input type="submit" value="Submit" class="btn btn-primary">
             </p>
 
         </form>
     {% endif %}
-    <!-- <div class="row">
-
-        <div class="col-xs-8 col-sm-6 col-md-4 col-lg-3">
-            <a class="btn btn-primary" href="/recycler/{{location_id}}">
-                Submit
-            </a>
-        </div>
-    </div> -->
     <br><br>
 
 {% endblock %}
