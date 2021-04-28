@@ -194,18 +194,19 @@ def add_to_favorites(location_id):
 def show_favorite_recyclers():
     """Display list of favorited recyclers."""
 
+    user_id = session['Current User']
     loc_details=''
-    favorites = crud.get_favorited_recyclers(session['Current User'])
+    favorites = crud.get_favorited_recyclers(user_id)
 
     if favorites:
         print("FAVORITES: ", favorites)
-        loc_ids = []
+        loc_ids = crud.get_favorited_location_ids_list(user_id)
 
         url = f'http://api.earth911.com/earth911.getLocationDetails'
         
-        #loop through the favorited recyclers and add them
-        for favorite in favorites:
-            loc_ids.append(favorite.location_id)
+        # #loop through the favorited recyclers and add them
+        # for favorite in favorites:
+        #     loc_ids.append(favorite.location_id)
         
         print("LOCATION IDs FROM FAVORITES: ", loc_ids)
         payload = {'api_key': API_KEY,
@@ -287,7 +288,7 @@ def show_user(user_id):
 def logout_user():
     """Logs out user."""
     if 'Current User' in session:    
-        session.pop('Current User', None)
+        del session['Current User']
         flash("Successfully logged out.")
     else:
        session.clear()
