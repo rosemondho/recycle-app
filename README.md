@@ -25,7 +25,7 @@ A app where users can determine if their plastic can be recycled, and the neares
 - Users can get a list of search results for nearby recyclers based on the criteria.
 - Users can create and login to an account.
 - Logged-in users can like and/or comment on different recyclers.
-- Users can search 
+- Users can see a list of all recycleable materials.
 
 #### 2.0
 
