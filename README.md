@@ -10,7 +10,6 @@ A app where users can determine if their plastic can be recycled, and the neares
 
 ### Data
 
-- Number of plastic recycling symbol
 - ZIP Code
 - Number of Results
 - Radius of Search
