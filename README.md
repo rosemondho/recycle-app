@@ -12,17 +12,20 @@ A app where users can determine if their plastic can be recycled, and the neares
 
 - Number of plastic recycling symbol
 - ZIP Code
-- ID of item
+- Number of Results
+- Radius of Search
+- [optional] Materials to Recycle
 
 
 ### Roadmap
 
 #### MVP
 
-- Users can enter in a number for the plastic recycling symbol
-- Users can access Recycling API
-- Frontend: displays webpage, Backend: database and server
-- Login and save favorite recycling center on profile
+- Users can search based on ZIP code and materials.
+- Users can get a list of search results for nearby recyclers based on the criteria.
+- Users can create and login to an account.
+- Logged-in users can like and/or comment on different recyclers.
+- Users can search 
 
 #### 2.0
 
@@ -31,4 +34,4 @@ A app where users can determine if their plastic can be recycled, and the neares
 #### 3.0
 
 - Add on Twilio to text users the address of the recycler
-- Add on CO2 footprint of 
+- Add on CO2 footprint of traveling to recycler. 
