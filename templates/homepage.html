@@ -64,40 +64,24 @@
           </div>
         </div> <!--closes the col-->
         
-        <!-- <div class="col-6"> -->
-        <div class="form-group">
-          <label for="materials-search">Materials</label>
-          <small class="form-text text-muted">
-            [Optional] Choose one material to search for.
-          </small>
-          <table class="table" name="materials_list">
-          <!-- <div class="custom-control custom-checkbox"> -->
-          <!-- <thead>
-            <tr>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-              <th scope="col"></th>
-            </tr>
-          </thead> -->
-          <tbody>
-            
-            {% for material in materials %}
+        <label for="materials-search">Materials</label>
+        <small class="form-text text-muted">
+          [Optional] Choose one material to search for.
+        </small>
 
-                <!-- <div class="form-check col"> -->
-                <td><input class="form-check-input" type="checkbox" name="material_item" value="{{material['description']}}">
-                <label class="form-check-label" name="material_label">{{material['description']}}</td>
-                <!-- </div> -->
+
+        <div class="form-group" id="materials-search">
+          <ul class="checkbox" id="materials_list"> 
+        
+            {% for material in materials %}
+              <li><input type="checkbox" name="material_item" id="{{material['description']}}" value="{{material['description']}}">
+              <label name="material_label" for="{{material['description']}}">{{material['description']}}</li>
             {% endfor %}
-          </tbody>
-          <br>  
+
+          </ul> 
           
         </div>
         <br>
-        <br>
-        <!-- </div> -->
-          
-        <!-- </div> -->
         <input type="submit" value="Look for recyclers!" class="btn btn-primary">
       </form>
   </div>

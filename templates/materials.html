@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block title %}Nearest Recyclers{% endblock %}
+
+{% block body %}
+  <div class="container">
+    <div class="row">
+      <div class="col d-flex justify-content-center">
+        <a href="/" class="lead backlink">
+          Back to the homepage
+        </a>
+      </div>
+    </div>
+    <br>
+    <div class="row">
+      <div class="col">
+
+        <div id="accordion">
+          <h2>Recycleable Materials</h2>
+          
+            {% for material in materials_list %}
+            <ul class="materials-list list-group">
+                <li class="list-group-item list-group-item-action" style="border: none">
+                  <div class="row">
+                    <div class="col">
+                      <div class="d-flex w-100 justify-content-between border-0">
+                          <h4>{{ material['description'] }}</h4>
+                          <p>{{ material['long_description'] }}</p>
+                      </div>
+                    </div>
+                  </div>
+                </li>     
+            {% endfor %}
+            </ul>
+        </div>
+      </div>
+    </div>
+  </div> 
+{% endblock %}

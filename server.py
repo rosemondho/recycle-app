@@ -48,7 +48,6 @@ def search_for_recyclers():
 
     # Links material description to material ID. var material is a Type<'str>
     for material in chosen_materials: 
-        # loop through 
         for material_dict in materials_list:
             if material == material_dict['description']:
                 chosen_material_id.append(material_dict['material_id'])
@@ -203,11 +202,7 @@ def show_favorite_recyclers():
         loc_ids = crud.get_favorited_location_ids_list(user_id)
 
         url = f'http://api.earth911.com/earth911.getLocationDetails'
-        
-        # #loop through the favorited recyclers and add them
-        # for favorite in favorites:
-        #     loc_ids.append(favorite.location_id)
-        
+                
         print("LOCATION IDs FROM FAVORITES: ", loc_ids)
         payload = {'api_key': API_KEY,
                 'location_id[]': loc_ids}
@@ -296,7 +291,13 @@ def logout_user():
 
     return redirect('/')
 
+@app.route('/materials')
+def show_materials():
+    #list of dictionaries
+    
+    materials_list = materials.get_materials()
 
+    return render_template('materials.html', materials_list=materials_list)
 
 
 if __name__ == '__main__':
