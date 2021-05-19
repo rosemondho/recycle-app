@@ -54,17 +54,19 @@
     </div>
     <br>
     {% if 'Current User' in session %}
-        <form action="/recycler/{{location_id}}" method="POST">
-            <p>
-            <h4>Leave A Comment</h4>
-            <textarea rows="4" cols="50" name="comment"></textarea>
-            </p>
+        
+            <form action="/recycler/{{location_id}}" method="POST">
+                <p>
+                <h4>Leave A Comment</h4>
+                <textarea rows="4" cols="50" name="comment"></textarea>
+                </p>
+        {% if is_favorited %}            
+                <p>
+                    <input type="submit" value="Submit" class="btn btn-primary">
+                </p>
 
-            <p>
-                <input type="submit" value="Submit" class="btn btn-primary">
-            </p>
-
-        </form>
+            </form>
+        {% endif %}
     {% endif %}
     <br><br>
 

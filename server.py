@@ -88,7 +88,7 @@ def search_for_recyclers():
 
     response = requests.get(location_url, params=payload)
     final_data = response.json()
-    # print(final_data)
+    #print(final_data)
     recyclers = final_data['result']    # entire list of locations
     
     # Get address from location
@@ -99,17 +99,18 @@ def search_for_recyclers():
     print('TYPE loc_ids: ', type(loc_ids))
     print("LOCATION IDs: ", loc_ids)
 
-    if loc_ids == []:
-        flash('0 recyclers matched your search.')
-        redirect('/')
-
     payload = {'api_key': API_KEY,
                 'location_id[]': loc_ids}
 
     response = requests.get(locdetails_url, params=payload)
-    loc_details = response.json()
-    loc_details = loc_details['result']
-    # print('LOC_DETAILS:', loc_details)
+    
+    if loc_ids:
+        loc_details = response.json()
+        loc_details = loc_details['result']
+        # print('LOC_DETAILS:', loc_details)
+        
+    elif not loc_ids:
+        loc_details = []
     
     return render_template('nearest_recyclers.html',
                             pformat=pformat,

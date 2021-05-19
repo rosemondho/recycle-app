@@ -76,13 +76,6 @@ def get_recycler_comments(location_id):
     return Comment.query.filter(Comment.location_id==location_id).all()
 
 
-# def get_names_in_comments(location_id):
-#     all_comments = Comment.query.filter(Comment.location_id==location_id).all()
-#     all_user_ids = [comment.user_id for comment in all_comments]
-    
-#     return [User.query.get(user_id).name for user_id in all_user_ids]
-
-
 def fav_a_recycler(user_id, location_id):
     """Return a new favorited recycler."""
 

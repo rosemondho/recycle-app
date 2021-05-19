@@ -21,20 +21,6 @@ class User(db.Model):
     def __repr__(self):
         return f'<User user_id={self.user_id} name={self.name} email={self.email}>'
 
-# class Recycler(db.Model):
-#     """A recycler in the recycling directory."""
-#     __tablename__ = 'recyclers'
-
-#     location_id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-#     name = db.Column(db.String)
-#     address = db.Column(db.Text)
-#     materials = db.Column(db.String)
-#     distance = db.Column(db.Integer)
-
-#     def __repr__(self):
-#         return f'<Recycler location_id={self.location_id} name={self.name}>'
-
-
 
 class FavRecycler(db.Model):
     """A favorited Recycler."""
